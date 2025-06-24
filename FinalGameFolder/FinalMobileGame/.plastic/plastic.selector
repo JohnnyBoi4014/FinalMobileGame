@@ -1,0 +1,4 @@
+repository "FinalMobileGame/FinalMobileGame@20067024805146@cloud"
+  path "/"
+    br "/main"
+    co "/main"

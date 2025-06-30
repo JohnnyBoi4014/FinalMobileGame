@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CameraTargetScript : MonoBehaviour
 {
@@ -8,7 +9,7 @@ public class CameraTargetScript : MonoBehaviour
     private Rigidbody rb;
 
     [Range(0, 10)]
-    public float rollSpeed = 5;
+    public float rollSpeed = 10;
 
     public GameManager gameManager;
     
@@ -29,6 +30,7 @@ public class CameraTargetScript : MonoBehaviour
     void Update()
     {
         //Health
+        /*
         if (Input.GetKeyDown(KeyCode.D))
         {
             takeDamage(5);
@@ -41,30 +43,16 @@ public class CameraTargetScript : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.H))
         {
-            heal(20);
+            heal(20, 100);
             healthBar.setHealth(currentHealth);
         }
-        //Health
-
-        /*
-        //Mobile Touch
-        if (Input.touchCount > 0)
-        {
-            Touch touch = Input.touches[0];
-
-            TouchObjects(touch.position);
-        }
-        //Mobile Touch
-
-        //Computer Click
-        if (Input.GetMouseButton(0))
-        {
-            Vector2 screenPos = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-            
-            TouchObjects(screenPos);
-        }
-        //Computer Click
         */
+
+        if (currentHealth <=0)
+        {
+            SceneManager.LoadScene(4);
+        }
+        //Health
 
         //TEST TOUCH
         if (Input.GetMouseButton(0))
@@ -117,7 +105,7 @@ public class CameraTargetScript : MonoBehaviour
         healthBar.setHealth(currentHealth);
     }
 
-    public void heal(int heal)
+    public void heal(int heal, int pointInc)
     {
         if (currentHealth + heal >= maxHealth)
         {
@@ -128,7 +116,7 @@ public class CameraTargetScript : MonoBehaviour
             currentHealth += heal;
         }
 
-        gameManager.IncreaseScore();
+        gameManager.IncreaseScore(pointInc);
         healthBar.setHealth(currentHealth);
     }
 
@@ -164,6 +152,7 @@ public class CameraTargetScript : MonoBehaviour
     }
     */
 
+    /*
     private static void TouchObjects(Vector2 screenPos)
     {
         Ray touchRay = Camera.main.ScreenPointToRay(screenPos);
@@ -179,6 +168,26 @@ public class CameraTargetScript : MonoBehaviour
             }
         }
     }
+    */
+
+    private static void TouchObjects(Vector2 screenPos)
+    {
+        Ray touchRay = Camera.main.ScreenPointToRay(screenPos);
+        RaycastHit hit;
+
+        int layerMask = ~0;
+
+        if (Physics.Raycast(touchRay, out hit, Mathf.Infinity, layerMask, QueryTriggerInteraction.Ignore))
+        {
+            //if (Input.touchCount == 0)
+            //{
+            //    hit.transform.SendMessage("PlayerTouch", SendMessageOptions.DontRequireReceiver);
+            //}
+
+            hit.transform.SendMessage("PlayerTouch", SendMessageOptions.DontRequireReceiver);
+        }
+    }
+
     private static void TouchObjects(Vector2 screenPos, Touch touch)
     {
         Ray touchRay = Camera.main.ScreenPointToRay(screenPos);
@@ -196,23 +205,19 @@ public class CameraTargetScript : MonoBehaviour
     }
     private static void TouchObjects(Touch touch)
     {
+        Ray touchRay = Camera.main.ScreenPointToRay(touch.position);
+        RaycastHit hit;
 
-        if (Input.touchCount == 1)
+        int layerMask = ~0;
+
+        if (Physics.Raycast(touchRay, out hit, Mathf.Infinity, layerMask, QueryTriggerInteraction.Ignore))
         {
-            Ray touchRay = Camera.main.ScreenPointToRay(touch.position);
-            RaycastHit hit;
-
-            int layerMask = ~0;
-
-            if (Physics.Raycast(touchRay, out hit, Mathf.Infinity, layerMask, QueryTriggerInteraction.Ignore))
+            if (touch.phase == TouchPhase.Began)
             {
-                if (touch.phase == TouchPhase.Began)
-                {
-                    hit.transform.SendMessage("PlayerTouch", SendMessageOptions.DontRequireReceiver);
-                }
-
                 hit.transform.SendMessage("PlayerTouch", SendMessageOptions.DontRequireReceiver);
             }
+
+            //hit.transform.SendMessage("PlayerTouch", SendMessageOptions.DontRequireReceiver);
         }
     }
 }

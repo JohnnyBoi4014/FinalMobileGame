@@ -29,13 +29,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void IncreaseScore()
+    public void IncreaseScore(int incNum)
     {
-        score += 100;
+        score += incNum;
     }
     public void DecreaseScore()
     {
-        score -= 10;
+        score -= 100;
     }
 
     private void ResetGame()
